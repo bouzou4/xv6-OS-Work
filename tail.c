@@ -6,14 +6,35 @@ char buf[512];
 
 void tail(int fd)
 {
-    int n;
+    int n, lnum, start;
+    lnum = 10;
+    start = 0;
     
-    while((n = read(fd, buf, sizeof(buf))) > 0)
-        write(1, buf, n);
-    if(n < 0){
+    while((n = read(fd, buf, sizeof(buf))) > 0) {
+        for (int i = sizeof(buf); i > 0; i--) {
+            if (buf[i] == '\n') {
+                if (lnum > 1) {
+                    lnum--;
+                }
+                else {
+                    start = i + 1;
+                    break;
+                }
+            }
+        }
+        
+        while (buf[start] != buf[sizeof(buf)]) {
+           printf(1, "%c", buf[start]);
+            start++;
+        }
+    }
+    
+    if(n < 0) {
         printf(1, "tail: read error\n");
         exit();
     }
+    
+    exit();
 }
 
 int main(int argc, char *argv[])
