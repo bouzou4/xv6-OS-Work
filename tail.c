@@ -2,18 +2,18 @@
 #include "stat.h"
 #include "user.h"
 
-char buf[512];
+char buf[4096];
 
-void tail(int fd)
+void tail(int fd, int lines)
 {
     int n, lnum, start;
-    lnum = 10;
+    lnum = lines;
     start = 0;
     
     while((n = read(fd, buf, sizeof(buf))) > 0) {
         for (int i = sizeof(buf); i > 0; i--) {
             if (buf[i] == '\n') {
-                if (lnum > 1) {
+                if (lnum > 0) {
                     lnum--;
                 }
                 else {
@@ -39,20 +39,29 @@ void tail(int fd)
 
 int main(int argc, char *argv[])
 {
-    int fd, i;
+    int fd;
     
     if(argc <= 1){
-        tail(0);
+        tail(0, 0);
         exit();
     }
     
-    for(i = 1; i < argc; i++){
-        if((fd = open(argv[i], 0)) < 0){
-            printf(1, "tail: cannot open %s\n", argv[i]);
+    if (argc == 2) {
+        if((fd = open(argv[1], 0)) < 0){
+            printf(1, "tail: cannot open %s\n", argv[1]);
             exit();
         }
-        tail(fd);
-        close(fd);
+        tail(fd, 10);
     }
+    
+    else if (argc == 3) {
+        if((fd = open(argv[2], 0)) < 0){
+            printf(1, "tail: cannot open %s\n", argv[2]);
+            exit();
+        }
+        argv[1]++;
+        tail(fd, atoi(argv[1]));
+    }
+    close(fd);
     exit();
 }
