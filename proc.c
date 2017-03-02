@@ -51,6 +51,7 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
   release(&ptable.lock);
+  p->tickets = 10;
 
   // Allocate kernel stack.
   if((p->kstack = kalloc()) == 0){
@@ -269,7 +270,8 @@ void
 scheduler(void)
 {
   struct proc *p;
-  int foundproc = 1;
+  int foundproc = 0;
+  int totalTicks = 0;
 
   for(;;){
     // Enable interrupts on this processor.
@@ -277,6 +279,7 @@ scheduler(void)
 
     if (!foundproc) hlt();
     foundproc = 0;
+    totalTicks = 0;
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
