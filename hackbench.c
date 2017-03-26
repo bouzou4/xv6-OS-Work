@@ -75,7 +75,7 @@ static void fdpair(int fds[2])
     //    pipe(fds[0], fds[1]);
     if (pipe(fds) == 0)
       fd_count += 2;
-      return;
+    return;
   } else {
     // This mode would not run correctly in xv6
     //if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == 0)

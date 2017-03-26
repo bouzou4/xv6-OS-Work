@@ -165,6 +165,7 @@ UPROGS=\
 	_init\
 	_kill\
 	_ln\
+	_lotterytest\
 	_ls\
 	_mkdir\
 	_rm\
