@@ -272,6 +272,8 @@ scheduler(void)
   struct proc *p;
   int foundproc = 0;
   int totalTicks = 0;
+  int winProc = 0;
+  int counter = 0;
 
   for(;;){
     // Enable interrupts on this processor.
@@ -280,17 +282,41 @@ scheduler(void)
     if (!foundproc) hlt();
     foundproc = 0;
     totalTicks = 0;
+    winProc = 0;
+    counter = 0;
 
-    // Loop over process table looking for process to run.
+    // Loop over process table adding number of tickets.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
+      else
+        totalTicks += p->tickets;
+    }
 
+    // loop over process table again this time with winning lottery number checking for a winner
+    if (totalTicks > 0) {
+      winProc = random_at_most(totalTicks);
+      for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+        if(p->state != RUNNABLE)
+          continue;
+        else
+          counter += p->tickets;
+
+        if (counter > winProc) {
+          foundproc = 1;
+          break;
+        }
+      }
+    }
+      
+
+
+
+    if (foundproc) {
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
-      foundproc = 1;
       proc = p;
       switchuvm(p);
       p->state = RUNNING;
@@ -302,7 +328,6 @@ scheduler(void)
       proc = 0;
     }
     release(&ptable.lock);
-
   }
 }
 
