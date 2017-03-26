@@ -26,6 +26,7 @@ OBJS = \
 	trap.o\
 	uart.o\
 	vectors.o\
+	rand.o\
 	vm.o\
 
 # Cross-compiling (e.g., on Mac OS X)
@@ -161,7 +162,6 @@ UPROGS=\
 	_echo\
 	_forktest\
 	_grep\
-    _hello\
 	_init\
 	_kill\
 	_ln\
@@ -170,11 +170,10 @@ UPROGS=\
 	_rm\
 	_sh\
 	_stressfs\
-    _tail\
-    _test\
 	_usertests\
 	_wc\
 	_zombie\
+	_hackbench\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
